@@ -11,7 +11,7 @@
 	<groupId>com.portal</groupId>
 	<artifactId>discovery-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>discovery-service</name>
+<!--	<name>discovery-service</name>-->
 	<description>Ecommerce-Microservices</description>
 	<properties>
 		<java.version>11</java.version>

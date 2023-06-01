@@ -11,7 +11,7 @@
 	<groupId>com.portal</groupId>
 	<artifactId>order-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>order-service</name>
+<!--	<name>order-service</name>-->
 	<description>Ecommerce-Microservices</description>
 	<properties>
 		<java.version>11</java.version>
@@ -30,6 +30,7 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
+			<version>8.0.28</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -48,6 +49,7 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+			<version>3.1.5</version>
 		</dependency>
 	</dependencies>
 
