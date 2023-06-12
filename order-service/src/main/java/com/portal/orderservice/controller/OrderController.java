@@ -1,10 +1,9 @@
 package com.portal.orderservice.controller;
 
-import com.portal.orderservice.dto.OrderDto;
+import com.portal.orderservice.payload.OrderResponse;
 import com.portal.orderservice.payload.OrderRequest;
 import com.portal.orderservice.repository.OrderRepository;
 import com.portal.orderservice.service.OrderService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +26,13 @@ public class OrderController {
     }
 
     @GetMapping("/orders")
-    public ResponseEntity<List<OrderDto>> getAllOrders() {
+    public ResponseEntity<List<OrderResponse>> getAllOrders() {
         return new ResponseEntity<>(orderService.getAllOrders(), HttpStatus.OK);
     }
 
-    @GetMapping("/orders/{orderNumber}")
-    public ResponseEntity<OrderDto> getOrderByOrderNumber(@PathVariable String orderNumber) {
-        return new ResponseEntity<>(orderService.getOrderByOrderNumber(orderNumber), HttpStatus.OK);
+    @GetMapping("/orders/{id}")
+    public ResponseEntity<OrderResponse> getOrderByOrderNumber(@PathVariable Long id) {
+        return new ResponseEntity<>(orderService.getOrderById(id), HttpStatus.OK);
     }
 
     @PutMapping("/orders/{id}")

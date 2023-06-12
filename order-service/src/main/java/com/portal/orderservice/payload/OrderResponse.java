@@ -1,4 +1,4 @@
-package com.portal.orderservice.dto;
+package com.portal.orderservice.payload;
 
 import lombok.*;
 
@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDto {
+public class OrderResponse {
 
     private Long id;
 

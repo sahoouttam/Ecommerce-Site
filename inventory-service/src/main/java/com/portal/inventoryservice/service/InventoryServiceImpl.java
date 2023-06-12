@@ -1,5 +1,6 @@
 package com.portal.inventoryservice.service;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.portal.inventoryservice.entity.Inventory;
 import com.portal.inventoryservice.exception.InventoryNotFoundException;
 import com.portal.inventoryservice.mapper.InventoryMapper;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +28,7 @@ public class InventoryServiceImpl implements InventoryService {
         inventoryRepository.save(inventory);
     }
 
+    @HystrixCommand(fallbackMethod = "getAllInventoriesFallBack")
     @Override
     public List<InventoryResponse> getAllInventories() {
         return inventoryRepository.findAll().stream()
@@ -38,5 +41,9 @@ public class InventoryServiceImpl implements InventoryService {
         return inventoryRepository.findById(id)
                 .map(InventoryMapper::convertInventory)
                 .orElseThrow(() -> new InventoryNotFoundException("Inventory not found with id " + id));
+    }
+
+    private List<InventoryResponse> getAllInventoriesFallBack() {
+        return new ArrayList<>();
     }
 }

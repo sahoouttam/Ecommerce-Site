@@ -14,4 +14,7 @@ public class Shipping {
 
     @Column(name = "order_id")
     private Long orderId;
+
+    @Column(name = "quantity")
+    private Integer quantity;
 }

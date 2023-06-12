@@ -1,5 +1,8 @@
 package com.portal.productservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.portal.productservice.config.RabbitMQProducer;
 import com.portal.productservice.constant.Constants;
 import com.portal.productservice.converter.ProductConverter;
 import com.portal.productservice.converter.ProductRequestConverter;
@@ -27,6 +30,8 @@ public class ProductService {
 
     private final ProductConverter productConverter;
 
+    private final RabbitMQProducer rabbitMQProducer;
+
     public ResponseEntity<HttpStatus> createProduct(ProductRequest productRequest) {
         Product product = productRequestConverter.convert(productRequest);
         if (product == null) throw new ResourceNotFoundException(Constants.PRODUCT_NOT_FOUND);
@@ -34,10 +39,13 @@ public class ProductService {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @HystrixCommand(fallbackMethod = "getProductByIdFallBack")
     public ResponseEntity<ProductResponse> getProductById(long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(Constants.PRODUCT_NOT_FOUND));
-        return new ResponseEntity<>(productConverter.convert(product), HttpStatus.OK);
+        ProductResponse productResponse = productConverter.convert(product);
+        rabbitMQProducer.send(productResponse);
+        return new ResponseEntity<>(productResponse, HttpStatus.OK);
     }
 
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
@@ -68,6 +76,17 @@ public class ProductService {
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
+    private ResponseEntity<ProductResponse> getProductByIdFallBack() {
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setId(-1L);
+        productResponse.setName("default_name");
+        productResponse.setDescription("default_description");
+        productResponse.setBrand("default_brand");
+        productResponse.setPrice(-100);
+
+        return new ResponseEntity<>(productResponse, HttpStatus.EXPECTATION_FAILED);
     }
 
 }

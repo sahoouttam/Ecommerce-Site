@@ -1,13 +1,12 @@
 package com.portal.orderservice.service;
 
+import com.portal.orderservice.config.RabbitMQProducer;
 import com.portal.orderservice.dto.InventoryResponse;
 import com.portal.orderservice.dto.ItemDto;
-import com.portal.orderservice.dto.OrderDto;
-import com.portal.orderservice.entity.Item;
+import com.portal.orderservice.payload.OrderResponse;
 import com.portal.orderservice.entity.Order;
 import com.portal.orderservice.exception.OutOfStockException;
 import com.portal.orderservice.exception.ResourceNotFoundException;
-import com.portal.orderservice.mapper.ItemMapper;
 import com.portal.orderservice.mapper.OrderMapper;
 import com.portal.orderservice.payload.OrderRequest;
 import com.portal.orderservice.repository.OrderRepository;
@@ -30,6 +29,8 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     private final WebClient webClient;
+
+    private final RabbitMQProducer rabbitMQProducer;
 
     public ResponseEntity<HttpStatus> createOrder(OrderRequest orderRequest) {
         Order order = OrderMapper.convertOrderRequest(orderRequest);
@@ -56,15 +57,19 @@ public class OrderService {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    public List<OrderDto> getAllOrders() {
+    public List<OrderResponse> getAllOrders() {
         return orderRepository.findAll()
                 .stream()
                 .map(OrderMapper::convertOrder)
                 .collect(Collectors.toList());
     }
 
-    public OrderDto getOrderByOrderNumber(String orderNumber) {
-        return OrderMapper.convertOrder(orderRepository.findByOrderNumber(orderNumber));
+    public OrderResponse getOrderById(Long id) {
+        OrderResponse orderResponse = orderRepository.findById(id)
+                .map(OrderMapper::convertOrder)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id " + id));
+        rabbitMQProducer.send(orderResponse);
+        return orderResponse;
     }
 
     public void updateOrder(OrderRequest orderRequest, Long id) {

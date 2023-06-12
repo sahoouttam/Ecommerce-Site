@@ -1,6 +1,6 @@
 package com.portal.orderservice.mapper;
 
-import com.portal.orderservice.dto.OrderDto;
+import com.portal.orderservice.payload.OrderResponse;
 import com.portal.orderservice.entity.Item;
 import com.portal.orderservice.entity.Order;
 import com.portal.orderservice.payload.OrderRequest;
@@ -24,8 +24,8 @@ public class OrderMapper {
                 .build();
     }
 
-    public static OrderDto convertOrder(Order order) {
-        return OrderDto.builder()
+    public static OrderResponse convertOrder(Order order) {
+        return OrderResponse.builder()
                 .id(order.getId())
                 .orderName(order.getOrderNumber())
                 .build();
