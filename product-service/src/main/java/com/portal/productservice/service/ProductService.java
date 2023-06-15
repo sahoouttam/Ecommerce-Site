@@ -1,7 +1,5 @@
 package com.portal.productservice.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.portal.productservice.config.RabbitMQProducer;
 import com.portal.productservice.constant.Constants;
 import com.portal.productservice.converter.ProductConverter;
@@ -17,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
