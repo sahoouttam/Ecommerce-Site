@@ -39,7 +39,6 @@ public class ProductService {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @HystrixCommand(fallbackMethod = "getProductByIdFallBack")
     public ResponseEntity<ProductResponse> getProductById(long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(Constants.PRODUCT_NOT_FOUND));
@@ -76,17 +75,6 @@ public class ProductService {
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(products, HttpStatus.OK);
-    }
-
-    private ResponseEntity<ProductResponse> getProductByIdFallBack() {
-        ProductResponse productResponse = new ProductResponse();
-        productResponse.setId(-1L);
-        productResponse.setName("default_name");
-        productResponse.setDescription("default_description");
-        productResponse.setBrand("default_brand");
-        productResponse.setPrice(-100);
-
-        return new ResponseEntity<>(productResponse, HttpStatus.EXPECTATION_FAILED);
     }
 
 }

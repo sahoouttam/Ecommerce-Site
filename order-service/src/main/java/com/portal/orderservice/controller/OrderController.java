@@ -4,6 +4,7 @@ import com.portal.orderservice.payload.OrderResponse;
 import com.portal.orderservice.payload.OrderRequest;
 import com.portal.orderservice.repository.OrderRepository;
 import com.portal.orderservice.service.OrderService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ public class OrderController {
     private OrderService orderService;
     private final OrderRepository orderRepository;
 
+    @CircuitBreaker(name = "createOrderFallBack", fallbackMethod = "createOrderFallBack")
     @PostMapping("/orders")
     public ResponseEntity<HttpStatus> createOrder(@RequestBody OrderRequest orderRequest) {
         orderService.createOrder(orderRequest);
@@ -45,5 +47,9 @@ public class OrderController {
     public ResponseEntity<HttpStatus> deleteOrder(@PathVariable Long id) {
         orderService.deleteOrder(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    public ResponseEntity<String> createOrderFallBack() {
+        return new ResponseEntity<>("Order Failed", HttpStatus.EXPECTATION_FAILED);
     }
  }

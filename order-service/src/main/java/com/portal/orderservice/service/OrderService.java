@@ -32,7 +32,7 @@ public class OrderService {
 
     private final RabbitMQProducer rabbitMQProducer;
 
-    public ResponseEntity<HttpStatus> createOrder(OrderRequest orderRequest) {
+    public void createOrder(OrderRequest orderRequest) {
         Order order = OrderMapper.convertOrderRequest(orderRequest);
         List<String> itemCodes = orderRequest.getItems()
                 .stream()
@@ -54,7 +54,7 @@ public class OrderService {
         if (allItemInStock) orderRepository.save(order);
         else throw new OutOfStockException("Out of stock");
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     public List<OrderResponse> getAllOrders() {
